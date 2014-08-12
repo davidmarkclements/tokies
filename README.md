@@ -54,6 +54,32 @@ tokens.clear(name)
 ```
 Clears a value from the store.
 
+## Middleware
+Tokies also supplies ready-to-go middleware go decoding incoming tokens
+
+### Example usage:
+```
+var app = express();
+app.use(require('tokies').middleware(opts))
+```
+
+The middleware parses an expected Authorization header,
+containing `Bearer <token>`. If the auth header isn't found
+it then attempts to obtain a token from query string params,
+but only if a key is provided. 
+
+### Options
+
+```
+{
+  tokens: {}, // the tokens object, required unless using path instead
+  path: [], // alternative to tokens, provide a path to the tokens
+  		   // object as stored on on the request object, e.g. ['token'],
+  		   // refers to req.token or ['state', 'jar'] would be req.state.jar
+  key: '', //required if tokens are being passed by query params, we need to 
+  		   //know the key referencing the token. 
+}
+```
 
 
 
