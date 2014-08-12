@@ -1,68 +1,59 @@
-function Tokens(req, res) {
-  
-}
+var jwt = require('jwt-simple');
+var qs = require('querystring');
 
+function Tokens(req, res, secret) {
+  if (!(this instanceof Tokens)) { return new Tokens(req, res); }
+  this.request = req;
+  this.response = res;
+  this.payload = {};
+  this._secret = secret || '53C237'
+}
 
 Tokens.prototype = {
   constructor: Tokens,
-  get: function(name, opts) {
-    var sigName = name + ".sig"
-      , header, match, value, remote, data, index
-      , signed = opts && opts.signed !== undefined ? opts.signed : !!this.keys
-
-    header = this.request.headers["cookie"]
-    if (!header) return
-
-    match = header.match(getPattern(name))
-    if (!match) return
-
-    value = match[1]
-    if (!opts || !signed) return value
-
-    remote = this.get(sigName)
-    if (!remote) return
-
-    data = name + "=" + value
-    if (!this.keys) throw new Error('.keys required for signed cookies');
-    index = this.keys.index(data, remote)
-
-    if (index < 0) {
-      this.set(sigName, null, {path: "/", signed: false })
-    } else {
-      index && this.set(sigName, this.keys.sign(data), { signed: false })
-      return value
-    }
+  get: function(name) {
+    if (!this.payload) { return; }
+    return this.payload[name];
   },
 
-  set: function(name, value, opts) {
-    var res = this.response
-      , req = this.request
-      , headers = res.getHeader("Set-Cookie") || []
-      , secure = req.connection.encrypted
-      , cookie = new Cookie(name, value, opts)
-      , signed = opts && opts.signed !== undefined ? opts.signed : !!this.keys
+  set: function(name, value) {
+    if (!this.payload) { throw Error('payload is not available'); }
+    if (typeof value === 'undefined') { return this.clear(name);}
+    this.payload[name] = value;
+    return this;
+  },
 
-    if (typeof headers == "string") headers = [headers]
+  clear: function (name) {
+    if (!this.payload[name]) {return;}
+    this.payload = null;
+  },
 
-    if (!secure && opts && opts.secure) throw new Error("Cannot send secure cookie over unencrypted socket")
+  decode: function (hash) {
+    this.payload = jwt.decode(hash, this._secret);
+    return this.payload;
+  },
 
-    cookie.secure = secure
-    if (opts && "secure" in opts) cookie.secure = opts.secure
-    if (opts && "secureProxy" in opts) cookie.secure = opts.secureProxy
-    headers = pushCookie(headers, cookie)
-
-    if (opts && signed) {
-      if (!this.keys) throw new Error('.keys required for signed cookies');
-      cookie.value = this.keys.sign(cookie.toString())
-      cookie.name += ".sig"
-      headers = pushCookie(headers, cookie)
-    }
-
-    var setHeader = res.set ? http.OutgoingMessage.prototype.setHeader : res.setHeader
-    setHeader.call(res, 'Set-Cookie', headers)
-    return this
+  encode: function () {
+    var hash = jwt.encode(this.payload, this._secret);
+    this.payload = null;
+    return hash;
   }
 }
 
+Tokens.middleware = function (opts) {
+  return function (req, res, next) {
+    var tokens = opts.tokens, path, encoded;
+    if (!tokens && Array.isArray(opts.path)) {
+      path = opts.path.slice();
+      tokens = req;
+      while (path.length && (tokens = tokens[path.shift()]));
+    }
+    encoded = req.headers.authorization && req.headers.authorization.replace(/bearer /i, '');
+    encoded = encoded || opts.key && qs.parse(req.url.split('?')[1])[opts.key];
+    if (!encoded || !tokens || tokens.payroll) { return next && next(); }
+    tokens.decode(encoded);
+    next && next();
+  }
+}
 
 module.exports = Tokens;

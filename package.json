@@ -1,19 +1,22 @@
 {
-  "name": "tokens",
+  "name": "tokies",
   "version": "0.0.0",
-  "description": "Auth token management that mimics the API of the 'cookies' module, for easy drop in replacement",
+  "description": "A JWT token jar that partially mimics the API of the 'cookies' module, for easy drop in replacement",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/davidmarkclements/tokens"
+    "url": "https://github.com/davidmarkclements/tokies"
   },
   "author": "David Mark Clements",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/davidmarkclements/tokens/issues"
+    "url": "https://github.com/davidmarkclements/tokies/issues"
   },
-  "homepage": "https://github.com/davidmarkclements/tokens"
+  "homepage": "https://github.com/davidmarkclements/tokies",
+  "dependencies": {
+    "jwt-simple": "^0.2.0"
+  }
 }
