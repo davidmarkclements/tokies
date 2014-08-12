@@ -1,6 +1,6 @@
 {
   "name": "tokies",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A JWT token jar that partially mimics the API of the 'cookies' module, for easy drop in replacement",
   "main": "index.js",
   "scripts": {
