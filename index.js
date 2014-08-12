@@ -1,16 +1,16 @@
 var jwt = require('jwt-simple');
 var qs = require('querystring');
 
-function Tokens(req, res, secret) {
-  if (!(this instanceof Tokens)) { return new Tokens(req, res); }
+function Tokies(req, res, secret) {
+  if (!(this instanceof Tokies)) { return new Tokies(req, res); }
   this.request = req;
   this.response = res;
   this.payload = {};
   this._secret = secret || '53C237'
 }
 
-Tokens.prototype = {
-  constructor: Tokens,
+Tokies.prototype = {
+  constructor: Tokies,
   get: function(name) {
     if (!this.payload) { return; }
     return this.payload[name];
@@ -40,7 +40,7 @@ Tokens.prototype = {
   }
 }
 
-Tokens.middleware = function (opts) {
+Tokies.middleware = function (opts) {
   return function (req, res, next) {
     var tokens = opts.tokens, path, encoded;
     if (!tokens && Array.isArray(opts.path)) {
@@ -56,4 +56,4 @@ Tokens.middleware = function (opts) {
   }
 }
 
-module.exports = Tokens;
+module.exports = Tokies;
