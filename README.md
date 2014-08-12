@@ -1,9 +1,9 @@
 # Tokies
 
-A (https://www.npmjs.org/package/cookies) [cookies] mimicking API for
+A  [cookies](https://www.npmjs.org/package/cookies) mimicking API for
 JSON Web Tokens (hash tokens that can be decoded to an object)
 
-See (https://www.npmjs.org/package/jwt-simple) [jwt-simple module]
+See [jwt-simple module](https://www.npmjs.org/package/jwt-simple)
 
 ## API
 
